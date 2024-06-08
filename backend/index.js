@@ -10,14 +10,25 @@ dotenv.config()
 const port=process.env.PORT || 5000
 const DBUrl=process.env.MONGO_URI
 const app=express()
-app.use(cors())
+app.use("/",(req,res)=>{
+    res.json("Hello from server")
+})
+var whitelist = ['https://project-mgmt-app-graphql.vercel.app']
+var corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  }
+}
+app.use(cors(corsOptions))
 app.use("/graphql",graphqlHTTP({
 schema,
 graphiql:process.env.NODE_ENV==="development"
 }))
-app.use("/",(req,res)=>{
-    res.json("Hello from server")
-})
+
 const startServer=async()=>{
 try
 {
